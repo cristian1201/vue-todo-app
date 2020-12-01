@@ -73,43 +73,35 @@ export default {
       state.currentView = viewLabel;
     };
 
-    const tasksListByStatus = reactive({
+    const taskLists = reactive({
       // All tasks
-      allTasks: computed(() => {
-        return state.taskList;
-      }),
+      all: computed(() => state.taskList),
 
       // Ongoing tasks
-      ongoingTasks: computed(() => {
-        return state.taskList.filter((task) => task.complete === false);
-      }),
+      ongoing: computed(() =>
+        state.taskList.filter((task) => task.complete === false)
+      ),
 
       // Completed tasks
-      completedTasks: computed(() => {
-        return state.taskList.filter((task) => task.complete === true);
-      }),
+      completed: computed(() =>
+        state.taskList.filter((task) => task.complete === true)
+      ),
     });
 
     const tasksInView = computed(() => {
       if (state.currentView === 'Ongoing') {
-        return tasksListByStatus.ongoingTasks;
+        return taskLists.ongoing;
       } else if (state.currentView === 'Completed') {
-        return tasksListByStatus.completedTasks;
+        return taskLists.completed;
       } else {
-        return tasksListByStatus.allTasks;
+        return taskLists.all;
       }
     });
 
     const tasksViewLength = reactive({
-      allTasksLength: computed(() => {
-        return tasksListByStatus.allTasks.length;
-      }),
-      ongoingTasksLength: computed(() => {
-        return tasksListByStatus.ongoingTasks.length;
-      }),
-      completedTasksLength: computed(() => {
-        return tasksListByStatus.completedTasks.length;
-      }),
+      allTasksLength: computed(() => taskLists.all.length),
+      ongoingTasksLength: computed(() => taskLists.ongoing.length),
+      completedTasksLength: computed(() => taskLists.completed.length),
     });
 
     return {
