@@ -12,12 +12,18 @@
     </div>
   </div>
   <div style="display: flex">
-    <div style="margin-right: 20px">All</div>
-    <div style="margin-right: 20px">Ongoing</div>
-    <div style="margin-right: 20px">Completed</div>
+    <button style="margin-right: 20px" @click="setView('All')">
+      All ({{ allTasksLength }})
+    </button>
+    <button style="margin-right: 20px" @click="setView('Ongoing')">
+      Ongoing ({{ ongoingTasksLength }})
+    </button>
+    <button style="margin-right: 20px" @click="setView('Completed')">
+      Completed ({{ completedTasksLength }})
+    </button>
   </div>
   <ul>
-    <li v-for="taskItem in taskList" :key="taskItem.label">
+    <li v-for="taskItem in tasksInView" :key="taskItem.label">
       {{ taskItem.label }}
       <input
         type="checkbox"
@@ -29,11 +35,13 @@
 </template>
 
 <script>
-import { reactive, toRefs } from 'vue';
+import { reactive, toRefs, computed } from 'vue';
 export default {
   name: 'App',
   setup() {
+    // Basic state
     const state = reactive({
+      currentView: 'All',
       newTaskInput: '',
       taskList: [
         {
@@ -60,9 +68,56 @@ export default {
       state.newTaskInput = '';
     };
 
+    // Set the current view
+    const setView = (viewLabel) => {
+      state.currentView = viewLabel;
+    };
+
+    const tasksListByStatus = reactive({
+      // All tasks
+      allTasks: computed(() => {
+        return state.taskList;
+      }),
+
+      // Ongoing tasks
+      ongoingTasks: computed(() => {
+        return state.taskList.filter((task) => task.complete === false);
+      }),
+
+      // Completed tasks
+      completedTasks: computed(() => {
+        return state.taskList.filter((task) => task.complete === true);
+      }),
+    });
+
+    const tasksInView = computed(() => {
+      if (state.currentView === 'Ongoing') {
+        return tasksListByStatus.ongoingTasks;
+      } else if (state.currentView === 'Completed') {
+        return tasksListByStatus.completedTasks;
+      } else {
+        return tasksListByStatus.allTasks;
+      }
+    });
+
+    const tasksViewLength = reactive({
+      allTasksLength: computed(() => {
+        return tasksListByStatus.allTasks.length;
+      }),
+      ongoingTasksLength: computed(() => {
+        return tasksListByStatus.ongoingTasks.length;
+      }),
+      completedTasksLength: computed(() => {
+        return tasksListByStatus.completedTasks.length;
+      }),
+    });
+
     return {
       ...toRefs(state),
+      ...toRefs(tasksViewLength),
       addTask,
+      tasksInView,
+      setView,
     };
   },
 };
