@@ -31,7 +31,7 @@
         v-model="taskItem.complete"
       />
       <button>Edit</button>
-      <button>Delete</button>
+      <button @click="deleteTask(taskItem.id)">Delete</button>
     </li>
   </ul>
 </template>
@@ -48,14 +48,17 @@ export default {
       newTaskInput: '',
       taskList: [
         {
+          id: uuid(),
           complete: false,
           label: 'Bread',
         },
         {
+          id: uuid(),
           complete: false,
           label: 'Milk',
         },
         {
+          id: uuid(),
           complete: true,
           label: 'Candy',
         },
@@ -65,10 +68,16 @@ export default {
     // Add a new task
     const addTask = () => {
       state.taskList.push({
+        id: uuid(),
         complete: false,
         label: state.newTaskInput,
       });
       state.newTaskInput = '';
+    };
+
+    const deleteTask = (taskId) => {
+      const taskIndex = state.taskList.findIndex((task) => task.id === taskId);
+      state.taskList.splice(taskIndex, 1);
     };
 
     // Set the current view
@@ -111,6 +120,7 @@ export default {
       ...toRefs(state),
       ...toRefs(tasksViewLength),
       addTask,
+      deleteTask,
       tasksInView,
       setView,
     };
