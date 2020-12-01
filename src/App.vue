@@ -30,12 +30,15 @@
         :checked="taskItem.complete"
         v-model="taskItem.complete"
       />
+      <button>Edit</button>
+      <button>Delete</button>
     </li>
   </ul>
 </template>
 
 <script>
 import { reactive, toRefs, computed } from 'vue';
+import { v4 as uuid } from 'uuid';
 export default {
   name: 'App',
   setup() {
@@ -62,8 +65,8 @@ export default {
     // Add a new task
     const addTask = () => {
       state.taskList.push({
-        label: state.newTaskInput,
         complete: false,
+        label: state.newTaskInput,
       });
       state.newTaskInput = '';
     };
