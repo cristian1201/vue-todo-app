@@ -8,13 +8,18 @@
     </div>
     <div class="mb-6">
       <div class="w-full flex">
-        <input
-          type="text"
-          v-model="newTaskInput"
-          @keyup.enter="addTask"
-          placeholder="Add a new task"
-          class="flex-grow flex-shrink-0 h-10 rounded-r-none rounded shadow-lg"
-        />
+        <div class="flex-grow">
+          <input
+            type="text"
+            v-model="newTaskInput"
+            @keyup.enter="addTask"
+            placeholder="Add a new task"
+            class="w-full h-10 mb-2 rounded-r-none rounded shadow-lg"
+          />
+          <p v-if="newTaskInputError" class="text-sm text-red-600">
+            {{ newTaskInputError }}
+          </p>
+        </div>
         <button
           class="p-2 h-10 bg-blue-500 rounded-l-none rounded-r text-white hover:bg-blue-600 shadow-lg"
           @click="addTask"
@@ -106,6 +111,7 @@ export default {
     const state = reactive({
       currentView: 'All',
       newTaskInput: '',
+      newTaskInputError: '',
       taskList: [
         {
           id: uuid(),
@@ -132,13 +138,20 @@ export default {
 
     // Add a new task
     const addTask = () => {
-      state.taskList.push({
-        id: uuid(),
-        complete: false,
-        edit: false,
-        label: state.newTaskInput,
-      });
-      state.newTaskInput = '';
+      if (state.newTaskInput !== '') {
+        state.taskList.push({
+          id: uuid(),
+          complete: false,
+          edit: false,
+          label: state.newTaskInput,
+        });
+        state.newTaskInput = '';
+        if (state.newTaskInputError) {
+          state.newTaskInputError = '';
+        }
+      } else {
+        state.newTaskInputError = 'This field cannot be empty';
+      }
     };
 
     const findIndexTaskById = (taskId) => {
