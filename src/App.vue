@@ -28,41 +28,11 @@
         </button>
       </div>
     </div>
-    <div class="flex mb-3 text-sm text-gray-500">
-      <button
-        class="mr-4 pb-1"
-        :class="{
-          'border-b-2 border-blue-500 text-blue-500 focus:outline-none font-medium': isActiveView(
-            'All'
-          ),
-        }"
-        @click="setView('All')"
-      >
-        All ({{ allTasksLength }})
-      </button>
-      <button
-        class="mr-4 pb-1"
-        :class="{
-          'border-b-2 border-blue-500 text-blue-500 focus:outline-none font-medium': isActiveView(
-            'Ongoing'
-          ),
-        }"
-        @click="setView('Ongoing')"
-      >
-        Ongoing ({{ ongoingTasksLength }})
-      </button>
-      <button
-        class="mr-4 pb-1"
-        :class="{
-          'border-b-2 border-blue-500 text-blue-500 focus:outline-none font-medium': isActiveView(
-            'Completed'
-          ),
-        }"
-        @click="setView('Completed')"
-      >
-        Completed ({{ completedTasksLength }})
-      </button>
-    </div>
+    <TabNav
+      :current-view="currentView"
+      :items="taskListOverview"
+      @update-current-view="setView"
+    />
     <ul>
       <li
         v-for="(taskItem, i) in tasksInView"
@@ -123,15 +93,21 @@
 <script>
 import { ref, onBeforeUpdate, reactive, toRefs, computed, nextTick } from 'vue';
 import { v4 as uuid } from 'uuid';
+
+// Icon
 import IconPencil from './components/IconPencil.vue';
 import IconTrash from './components/IconTrash.vue';
 import IconCheck from './components/IconCheck.vue';
+
+import TabNav from './components/TabNav.vue';
+
 export default {
   name: 'App',
   components: {
     IconPencil,
     IconTrash,
     IconCheck,
+    TabNav,
   },
   setup() {
     // Basic state
@@ -185,6 +161,25 @@ export default {
       return state.taskList.findIndex((task) => task.id === taskId);
     };
 
+    const taskListOverview = reactive([
+      {
+        value: 'All',
+        label: computed(() => 'All ' + '(' + taskLists.all.length + ')'),
+      },
+      {
+        value: 'Ongoing',
+        label: computed(
+          () => 'Ongoing ' + '(' + taskLists.ongoing.length + ')'
+        ),
+      },
+      {
+        value: 'Completed',
+        label: computed(
+          () => 'Completed ' + '(' + taskLists.completed.length + ')'
+        ),
+      },
+    ]);
+
     const toggleEdit = async (taskId) => {
       const taskToEdit = state.taskList[findIndexTaskById(taskId)];
       taskToEdit.edit = true;
@@ -236,10 +231,6 @@ export default {
       completedTasksLength: computed(() => taskLists.completed.length),
     });
 
-    const isActiveView = (viewLabel) => {
-      return viewLabel === state.currentView;
-    };
-
     return {
       ...toRefs(state),
       ...toRefs(tasksViewLength),
@@ -247,8 +238,8 @@ export default {
       deleteTask,
       toggleEdit,
       confirmEdit,
-      isActiveView,
       tasksInView,
+      taskListOverview,
       setView,
       editTasks,
     };
