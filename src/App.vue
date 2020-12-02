@@ -23,14 +23,22 @@
     </button>
   </div>
   <ul>
-    <li v-for="taskItem in tasksInView" :key="taskItem.label">
-      {{ taskItem.label }}
+    <li v-for="taskItem in tasksInView" :key="taskItem.id">
+      <input
+        v-if="taskItem.edit"
+        v-model="taskItem.label"
+        type="text"
+        @keyup.enter="confirmEdit(taskItem.id)"
+      />
+      <span v-else>
+        {{ taskItem.label }}
+      </span>
       <input
         type="checkbox"
         :checked="taskItem.complete"
         v-model="taskItem.complete"
       />
-      <button>Edit</button>
+      <button @click="toggleEdit(taskItem.id)">Edit</button>
       <button @click="deleteTask(taskItem.id)">Delete</button>
     </li>
   </ul>
@@ -50,16 +58,19 @@ export default {
         {
           id: uuid(),
           complete: false,
+          edit: false,
           label: 'Bread',
         },
         {
           id: uuid(),
           complete: false,
+          edit: false,
           label: 'Milk',
         },
         {
           id: uuid(),
           complete: true,
+          edit: false,
           label: 'Candy',
         },
       ],
@@ -70,14 +81,27 @@ export default {
       state.taskList.push({
         id: uuid(),
         complete: false,
+        edit: false,
         label: state.newTaskInput,
       });
       state.newTaskInput = '';
     };
 
+    const findIndexTaskById = (taskId) => {
+      return state.taskList.findIndex((task) => task.id === taskId);
+    };
+
+    const toggleEdit = (taskId) => {
+      const taskToEdit = state.taskList[findIndexTaskById(taskId)];
+      taskToEdit.edit = !taskToEdit.edit;
+    };
+
+    const confirmEdit = (taskId) => {
+      state.taskList[findIndexTaskById(taskId)].edit = false;
+    };
+
     const deleteTask = (taskId) => {
-      const taskIndex = state.taskList.findIndex((task) => task.id === taskId);
-      state.taskList.splice(taskIndex, 1);
+      state.taskList.splice(findIndexTaskById(taskId), 1);
     };
 
     // Set the current view
@@ -121,6 +145,8 @@ export default {
       ...toRefs(tasksViewLength),
       addTask,
       deleteTask,
+      toggleEdit,
+      confirmEdit,
       tasksInView,
       setView,
     };
