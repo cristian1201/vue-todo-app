@@ -67,7 +67,7 @@
       <li
         v-for="(taskItem, i) in tasksInView"
         :key="taskItem.id"
-        class="p-3 rounded-md mb-3 border flex justify-between items-center hover:border-gray-400"
+        class="px-3 py-2 rounded-md mb-3 border flex justify-between items-center hover:border-gray-400"
       >
         <div class="flex flex-grow items-center">
           <input
@@ -88,7 +88,11 @@
             class="h-10 w-full mr-2 rounded border border-gray-300"
             @keyup.enter="confirmEdit(taskItem.id)"
           />
-          <span v-show="!taskItem.edit" @dblclick="toggleEdit(taskItem.id)">
+          <span
+            v-show="!taskItem.edit"
+            class="flex items-center h-10"
+            @dblclick="toggleEdit(taskItem.id)"
+          >
             {{ taskItem.label }}
           </span>
         </div>
