@@ -7,13 +7,13 @@
       </p>
     </div>
     <div class="mb-6">
-      <div>
+      <div class="w-full flex">
         <input
           type="text"
           v-model="newTaskInput"
           @keyup.enter="addTask"
           placeholder="Add a new task"
-          class="h-10 rounded-r-none rounded shadow-lg"
+          class="flex-grow flex-shrink-0 h-10 rounded-r-none rounded shadow-lg"
         />
         <button
           class="p-2 h-10 bg-blue-500 rounded-l-none rounded-r text-white hover:bg-blue-600 shadow-lg"
@@ -59,30 +59,45 @@
       </button>
     </div>
     <ul>
-      <li v-for="taskItem in tasksInView" :key="taskItem.id">
-        <input
-          v-if="taskItem.edit"
-          v-model="taskItem.label"
-          type="text"
-          @keyup.enter="confirmEdit(taskItem.id)"
-        />
-        <span v-else>
-          {{ taskItem.label }}
-        </span>
-        <input
-          type="checkbox"
-          :checked="taskItem.complete"
-          v-model="taskItem.complete"
-        />
-        <button @click="toggleEdit(taskItem.id)">Edit</button>
-        <button @click="deleteTask(taskItem.id)">Delete</button>
+      <li
+        v-for="(taskItem, i) in tasksInView"
+        :key="taskItem.id"
+        class="p-3 rounded-md mb-3 border flex justify-between items-center hover:border-gray-400"
+      >
+        <div class="flex flex-grow items-center">
+          <input
+            type="checkbox"
+            :checked="taskItem.complete"
+            v-model="taskItem.complete"
+            class="mr-3"
+          />
+          <input
+            :ref="
+              (el) => {
+                if (el) editTasks[i] = el;
+              }
+            "
+            v-show="taskItem.edit"
+            v-model="taskItem.label"
+            type="text"
+            class="h-10 w-full mr-2 rounded border border-gray-300"
+            @keyup.enter="confirmEdit(taskItem.id)"
+          />
+          <span v-show="!taskItem.edit">
+            {{ taskItem.label }}
+          </span>
+        </div>
+        <div>
+          <button @click="toggleEdit(taskItem.id)">Edit</button>
+          <button @click="deleteTask(taskItem.id)">Delete</button>
+        </div>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-import { reactive, toRefs, computed } from 'vue';
+import { ref, onBeforeUpdate, reactive, toRefs, computed, nextTick } from 'vue';
 import { v4 as uuid } from 'uuid';
 export default {
   name: 'App',
@@ -113,6 +128,8 @@ export default {
       ],
     });
 
+    const editTasks = ref([HTMLElement]);
+
     // Add a new task
     const addTask = () => {
       state.taskList.push({
@@ -128,9 +145,11 @@ export default {
       return state.taskList.findIndex((task) => task.id === taskId);
     };
 
-    const toggleEdit = (taskId) => {
+    const toggleEdit = async (taskId) => {
       const taskToEdit = state.taskList[findIndexTaskById(taskId)];
       taskToEdit.edit = !taskToEdit.edit;
+      await nextTick();
+      editTasks.value[findIndexTaskById(taskId)].focus();
     };
 
     const confirmEdit = (taskId) => {
@@ -191,6 +210,7 @@ export default {
       isActiveView,
       tasksInView,
       setView,
+      editTasks,
     };
   },
 };
