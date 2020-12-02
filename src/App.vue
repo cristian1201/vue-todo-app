@@ -34,58 +34,68 @@
       @update-current-view="setView"
     />
     <ul>
-      <li
-        v-for="(taskItem, i) in tasksInView"
-        :key="taskItem.id"
-        class="px-3 py-2 rounded-md mb-3 border flex justify-between items-center hover:border-gray-400"
-      >
-        <div class="flex flex-grow items-center">
-          <input
-            type="checkbox"
-            :checked="taskItem.complete"
-            v-model="taskItem.complete"
-            class="mr-3"
-          />
-          <input
-            :ref="
-              (el) => {
-                if (el) editTasks[i] = el;
-              }
-            "
-            v-show="taskItem.edit"
-            v-model="taskItem.label"
-            type="text"
-            class="h-10 w-full mr-2 rounded border border-gray-300"
-            @keyup.enter="confirmEdit(taskItem.id)"
-          />
-          <span
-            v-show="!taskItem.edit"
-            class="flex text-gray-700 items-center h-10"
-            @dblclick="toggleEdit(taskItem.id)"
-          >
-            {{ taskItem.label }}
-          </span>
-        </div>
-        <div class="flex items-center">
-          <button
-            v-if="!taskItem.edit"
-            class="text-gray-500 mr-1"
-            @click="toggleEdit(taskItem.id)"
-          >
-            <IconPencil></IconPencil>
-          </button>
-          <button
-            v-else
-            class="text-white bg-green-500 rounded-full mr-1"
-            @click="confirmEdit(taskItem.id)"
-          >
-            <IconCheck></IconCheck>
-          </button>
-          <button class="text-gray-500 mr-1" @click="deleteTask(taskItem.id)">
-            <IconTrash />
-          </button>
-        </div>
-      </li>
+      <template v-if="tasksInView.length > 0">
+        <li
+          v-for="(taskItem, i) in tasksInView"
+          :key="taskItem.id"
+          class="px-3 py-2 rounded-md mb-3 border flex justify-between items-center hover:border-gray-400"
+        >
+          <div class="flex items-center w-full justify-between">
+            <div class="flex flex-grow items-center">
+              <input
+                type="checkbox"
+                :checked="taskItem.complete"
+                v-model="taskItem.complete"
+                class="mr-3"
+              />
+              <input
+                :ref="
+                  (el) => {
+                    if (el) editTasks[i] = el;
+                  }
+                "
+                v-show="taskItem.edit"
+                v-model="taskItem.label"
+                type="text"
+                class="h-10 w-full mr-2 rounded border border-gray-300"
+                @keyup.enter="confirmEdit(taskItem.id)"
+              />
+              <span
+                v-show="!taskItem.edit"
+                class="flex text-gray-700 items-center h-10"
+                @dblclick="toggleEdit(taskItem.id)"
+              >
+                {{ taskItem.label }}
+              </span>
+            </div>
+            <div class="flex">
+              <button
+                v-if="!taskItem.edit"
+                class="text-gray-500 mr-1"
+                @click="toggleEdit(taskItem.id)"
+              >
+                <IconPencil></IconPencil>
+              </button>
+              <button
+                v-else
+                class="text-white bg-green-500 rounded-full mr-1"
+                @click="confirmEdit(taskItem.id)"
+              >
+                <IconCheck></IconCheck>
+              </button>
+              <button
+                class="text-gray-500 mr-1"
+                @click="deleteTask(taskItem.id)"
+              >
+                <IconTrash />
+              </button>
+            </div>
+          </div>
+        </li>
+      </template>
+      <template v-else>
+        <p class="text-sm text-gray-600">No tasks here... 😢</p>
+      </template>
     </ul>
   </div>
 </template>
