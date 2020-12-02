@@ -90,7 +90,7 @@
           />
           <span
             v-show="!taskItem.edit"
-            class="flex items-center h-10"
+            class="flex text-gray-700 items-center h-10"
             @dblclick="toggleEdit(taskItem.id)"
           >
             {{ taskItem.label }}
