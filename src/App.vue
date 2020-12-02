@@ -18,7 +18,11 @@
     <button style="margin-right: 20px" @click="setView('Ongoing')">
       Ongoing ({{ ongoingTasksLength }})
     </button>
-    <button style="margin-right: 20px" @click="setView('Completed')">
+    <button
+      class="bg-indigo-500"
+      style="margin-right: 20px"
+      @click="setView('Completed')"
+    >
       Completed ({{ completedTasksLength }})
     </button>
   </div>
