@@ -83,7 +83,7 @@
             class="h-10 w-full mr-2 rounded border border-gray-300"
             @keyup.enter="confirmEdit(taskItem.id)"
           />
-          <span v-show="!taskItem.edit">
+          <span v-show="!taskItem.edit" @dblclick="toggleEdit(taskItem.id)">
             {{ taskItem.label }}
           </span>
         </div>
