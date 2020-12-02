@@ -92,9 +92,24 @@
             {{ taskItem.label }}
           </span>
         </div>
-        <div>
-          <button @click="toggleEdit(taskItem.id)">Edit</button>
-          <button @click="deleteTask(taskItem.id)">Delete</button>
+        <div class="flex items-center">
+          <button
+            v-if="!taskItem.edit"
+            class="text-gray-500 mr-1"
+            @click="toggleEdit(taskItem.id)"
+          >
+            <IconPencil></IconPencil>
+          </button>
+          <button
+            v-else
+            class="text-white bg-green-500 rounded-full mr-1"
+            @click="confirmEdit(taskItem.id)"
+          >
+            <IconCheck></IconCheck>
+          </button>
+          <button class="text-gray-500 mr-1" @click="deleteTask(taskItem.id)">
+            <IconTrash />
+          </button>
         </div>
       </li>
     </ul>
@@ -104,8 +119,16 @@
 <script>
 import { ref, onBeforeUpdate, reactive, toRefs, computed, nextTick } from 'vue';
 import { v4 as uuid } from 'uuid';
+import IconPencil from './components/IconPencil.vue';
+import IconTrash from './components/IconTrash.vue';
+import IconCheck from './components/IconCheck.vue';
 export default {
   name: 'App',
+  components: {
+    IconPencil,
+    IconTrash,
+    IconCheck,
+  },
   setup() {
     // Basic state
     const state = reactive({
@@ -160,7 +183,7 @@ export default {
 
     const toggleEdit = async (taskId) => {
       const taskToEdit = state.taskList[findIndexTaskById(taskId)];
-      taskToEdit.edit = !taskToEdit.edit;
+      taskToEdit.edit = true;
       await nextTick();
       editTasks.value[findIndexTaskById(taskId)].focus();
     };
