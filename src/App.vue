@@ -33,12 +33,13 @@
       :items="taskListOverview"
       @update-current-view="setView"
     />
-    <ul>
+    <ul class="relative">
       <template v-if="tasksInView.length > 0">
+        <transition-group name="list-complete" tag="li">
         <li
           v-for="(taskItem, i) in tasksInView"
           :key="taskItem.id"
-          class="px-3 py-2 rounded-md mb-3 border flex justify-between items-center hover:border-gray-400"
+          class="px-3 py-2 w-full rounded-md mb-3 border flex justify-between items-center hover:border-gray-400 transition-all duration-100 ease-in"
         >
           <div class="flex items-center w-full justify-between">
             <div class="flex flex-grow items-center">
@@ -92,6 +93,7 @@
             </div>
           </div>
         </li>
+        </transition-group>
       </template>
       <template v-else>
         <p class="text-sm text-gray-600">No tasks here... 😢</p>
@@ -256,3 +258,16 @@ export default {
   },
 };
 </script>
+
+<style>
+.list-complete-enter-from,
+.list-complete-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.list-complete-leave-active {
+  position: absolute;
+}
+
+</style>
