@@ -34,12 +34,13 @@
       @update-current-view="setView"
     />
     <ul class="relative">
-      <template v-if="tasksInView.length > 0">
+      <transition name="mode-fade" mode="out-in">
+      <div v-if="tasksInView.length > 0" key="tasks">
         <transition-group name="list-complete" tag="li">
         <li
           v-for="(taskItem, i) in tasksInView"
           :key="taskItem.id"
-          class="px-3 py-2 w-full rounded-md mb-3 border flex justify-between items-center hover:border-gray-400 transition-all duration-100 ease-in"
+          class="px-3 py-2 w-full rounded-md mb-3 border flex justify-between items-center hover:border-gray-400 transition-all duration-200 ease-in"
         >
           <div class="flex items-center w-full justify-between">
             <div class="flex flex-grow items-center">
@@ -49,25 +50,27 @@
                 v-model="taskItem.complete"
                 class="mr-3"
               />
-              <input
-                :ref="
-                  (el) => {
-                    if (el) editTasks[i] = el;
-                  }
-                "
-                v-show="taskItem.edit"
-                v-model="taskItem.label"
-                type="text"
-                class="h-10 w-full mr-2 rounded border border-gray-300"
-                @keyup.enter="confirmEdit(taskItem.id)"
-              />
-              <span
-                v-show="!taskItem.edit"
-                class="flex text-gray-700 items-center h-10"
-                @dblclick="toggleEdit(taskItem.id)"
-              >
-                {{ taskItem.label }}
-              </span>
+                <input
+                  :ref="
+                    (el) => {
+                      if (el) editTasks[i] = el;
+                    }
+                  "
+                  v-show="taskItem.edit"
+                  v-model="taskItem.label"
+                  type="text"
+                  class="h-10 w-full mr-2 rounded border border-gray-300"
+                  @keyup.enter="confirmEdit(taskItem.id)"
+                />
+              <transition name="mode-fade">
+                <span
+                  v-show="!taskItem.edit"
+                  class="flex text-gray-700 items-center h-10"
+                  @dblclick="toggleEdit(taskItem.id)"
+                >
+                  {{ taskItem.label }}
+                </span>
+              </transition>
             </div>
             <div class="flex">
               <button
@@ -94,10 +97,9 @@
           </div>
         </li>
         </transition-group>
-      </template>
-      <template v-else>
-        <p class="text-sm text-gray-600">No tasks here... 😢</p>
-      </template>
+      </div>
+      <p v-else key="notasks" class="absolute text-sm text-gray-600">No tasks here... 😢</p>
+      </transition>
     </ul>
   </div>
 </template>
@@ -260,14 +262,25 @@ export default {
 </script>
 
 <style>
-.list-complete-enter-from,
+.list-complete-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
 .list-complete-leave-to {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(20px);
 }
 
 .list-complete-leave-active {
   position: absolute;
+}
+
+.mode-fade-enter-active, .mode-fade-leave-active {
+  transition: opacity .2s
+}
+
+.mode-fade-enter-from, .mode-fade-leave-to {
+  opacity: 0
 }
 
 </style>
