@@ -62,7 +62,7 @@
                   class="h-10 w-full mr-2 rounded border border-gray-300"
                   @keyup.enter="confirmEdit(taskItem.id)"
                 />
-              <transition name="mode-fade">
+              <transition name="label">
                 <span
                   v-show="!taskItem.edit"
                   class="flex text-gray-700 items-center h-10"
@@ -78,7 +78,7 @@
                 class="text-gray-500 mr-1"
                 @click="toggleEdit(taskItem.id)"
               >
-                <IconPencil></IconPencil>
+                <IconPencil class="transition-all duration-100 hover:text-blue-400"></IconPencil>
               </button>
               <button
                 v-else
@@ -91,7 +91,7 @@
                 class="text-gray-500 mr-1"
                 @click="deleteTask(taskItem.id)"
               >
-                <IconTrash />
+                <IconTrash class="transition-all duration-100 hover:text-red-500" />
               </button>
             </div>
           </div>
@@ -280,6 +280,14 @@ export default {
 }
 
 .mode-fade-enter-from, .mode-fade-leave-to {
+  opacity: 0
+}
+
+.label-enter-active {
+  transition: opacity .2s
+}
+
+.label-enter-from {
   opacity: 0
 }
 
