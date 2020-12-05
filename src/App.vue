@@ -56,8 +56,8 @@
                       if (el) editTasks[i] = el;
                     }
                   "
-                  v-show="taskItem.edit"
                   v-model="taskItem.label"
+                  v-if="taskItem.edit"
                   type="text"
                   class="h-10 w-full mr-2 rounded border border-gray-300"
                   @keyup.enter="confirmEdit(taskItem.id)"
@@ -76,7 +76,7 @@
               <button
                 v-if="!taskItem.edit"
                 class="text-gray-500 mr-1"
-                @click="toggleEdit(taskItem.id)"
+                @click="toggleEdit(taskItem.id, i)"
               >
                 <IconPencil class="transition-all duration-100 hover:text-blue-400"></IconPencil>
               </button>
@@ -194,11 +194,11 @@ export default {
       },
     ]);
 
-    const toggleEdit = async (taskId) => {
+    const toggleEdit = async (taskId, indexList) => {
       const taskToEdit = state.taskList[findIndexTaskById(taskId)];
       taskToEdit.edit = true;
       await nextTick();
-      editTasks.value[findIndexTaskById(taskId)].focus();
+      editTasks.value[indexList].focus()
     };
 
     const confirmEdit = (taskId) => {
